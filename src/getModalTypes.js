@@ -68,6 +68,7 @@ export default ({models, cache = {}}) => {
           resolve: resolver(association)
         }
       } else {
+        // TODO: complete BelongsToMany
         // HasMany
         const connection = sequelizeConnection({
           name: connectionName,

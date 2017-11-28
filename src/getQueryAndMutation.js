@@ -3,7 +3,8 @@ import {
   resolver
 } from 'graphql-sequelize'
 import {
-  mutationWithClientMutationId
+  mutationWithClientMutationId,
+  fromGlobalId
 } from 'graphql-relay'
 import {
   GraphQLNonNull,
@@ -12,9 +13,6 @@ import {
 } from 'graphql'
 import * as utils from './utils'
 import defaults from 'defaults'
-import {
-  fromGlobalId
-} from 'graphql-relay'
 
 export default ({
   model,
