@@ -1,6 +1,6 @@
 {
   "name": "graphql-sequelizer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "repository": "https://github.com/Tocknicsu/graphql-sequelizer",
   "author": "Tocknicsu",
