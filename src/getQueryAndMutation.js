@@ -19,7 +19,7 @@ export default ({
   modelTypes
 }) => {
   const modelType = modelTypes[utils.getTableName(model)]
-  // const modelConfig = utils.getModelGrapqhQLConfig(model)
+  const modelConfig = utils.getModelGrapqhQLConfig(model)
   // const crudConfig = modelConfig.crud
   const result = {
     queries: {
@@ -29,29 +29,27 @@ export default ({
   }
   const nameResolver = utils.getQueryName
   const descriptionResolver = utils.getQueryDescription
-  let name, description
-
+  let graphqlObj
   // query all
   // TODO: resolve: utils.funcWrapper(modelConfig.crud.read.one.resolve, [resolver(model)])
-  name = nameResolver(model, 'read', 'all')
-  description = descriptionResolver(model, 'read', 'all')
-  result.queries[name] = {
-    description,
+  graphqlObj = modelConfig.crud.read.all({
+    name: nameResolver(model, 'read', 'all'),
+    description: descriptionResolver(model, 'read', 'all'),
     type: utils.createNonNullList(modelType),
     resolve: utils.createNonNullListResolver(resolver(model, {
       list: true
     }))
-  }
+  })
+  result.queries[graphqlObj.name] = graphqlObj
   // query one
-  name = nameResolver(model, 'read', 'one')
-  description = descriptionResolver(model, 'read', 'one')
-  result.queries[name] = {
-    description,
+  graphqlObj = modelConfig.crud.read.one({
+    name: nameResolver(model, 'read', 'one'),
+    description: descriptionResolver(model, 'read', 'one'),
     type: modelType,
     resolve: resolver(model)
-  }
+  })
+  result.queries[graphqlObj.name] = graphqlObj
 
-  const modelConfig = utils.getModelGrapqhQLConfig(model)
   let defaultFields = attributeFields(model, defaults(modelConfig.fieldConfig, {
     commentToDescription: true
   }))
@@ -64,16 +62,10 @@ export default ({
     description: 'Values to create or update',
     fields: defaultFields
   })
-  // try {
-  //   console.log(valuesFieldType.getFields().ownerId.type.toJSON() === 'ID!')
-  // } catch(e) {
-  // }
 
-  name = nameResolver(model, 'create', 'one')
-  description = descriptionResolver(model, 'create', 'one')
-  result.mutations[name] = mutationWithClientMutationId({
-    name,
-    description,
+  graphqlObj = modelConfig.crud.create.one({
+    name: nameResolver(model, 'create', 'one'),
+    description: descriptionResolver(model, 'create', 'one'),
     inputFields: () => {
       return {
         values: {
@@ -97,11 +89,11 @@ export default ({
     }
   })
 
-  name = nameResolver(model, 'update', 'one')
-  description = descriptionResolver(model, 'update', 'one')
-  result.mutations[name] = mutationWithClientMutationId({
-    name,
-    description,
+  result.mutations[graphqlObj.name] = mutationWithClientMutationId(graphqlObj)
+
+  graphqlObj = modelConfig.crud.update.one({
+    name: nameResolver(model, 'update', 'one'),
+    description: descriptionResolver(model, 'update', 'one'),
     inputFields: () => {
       return {
         id: {
@@ -130,11 +122,11 @@ export default ({
     }
   })
 
-  name = nameResolver(model, 'delete', 'one')
-  description = descriptionResolver(model, 'delete', 'one')
-  result.mutations[name] = mutationWithClientMutationId({
-    name,
-    description,
+  result.mutations[graphqlObj.name] = mutationWithClientMutationId(graphqlObj)
+
+  graphqlObj = modelConfig.crud.delete.one({
+    name: nameResolver(model, 'delete', 'one'),
+    description: descriptionResolver(model, 'delete', 'one'),
     inputFields: () => {
       return {
         id: {
@@ -154,5 +146,6 @@ export default ({
       }
     }
   })
+  result.mutations[graphqlObj.name] = mutationWithClientMutationId(graphqlObj)
   return result
 }

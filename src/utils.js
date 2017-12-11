@@ -27,44 +27,18 @@ export const connectionNameForAssociation = (model, associationName) => {
 
 export const getModelGrapqhQLConfig = (model) => {
   const config = defaults(model.graphql, {
-    name: (name) => name,
-    fields: (fields) => fields,
-    interfaces: (interfaces) => interfaces
-    // crud: {}
+    modelType: (modelType) => modelType,
+    crud: {}
   })
-  // const crudBooleanTable = _.clone(config.crud)
-  // const crudDefaultEnable = config.crud.enable
-  //
-  // for (let crudType of ['create', 'read', 'update', 'delete']) {
-  // }
-  // if (_.isBoolean(config.crud)) {
-  //   config.crud = {
-  //     enable: config.crud
-  //   }
-  // }
-  // config.crud = defaults(config.crud, {
-  //   enable: true
-  // })
-  // for (let crudType of ['create', 'read', 'update', 'delete']) {
-  //   if (!config.crud[crudType] && !config.crud.enable) {
-  //     config.crud[crudType] = false
-  //   }
-  //   if (config.crud[crudType] === false) continue
-  //   if (_.isBoolean(config.crud[crudType]) || !config.crud[crudType]) {
-  //     config.crud[crudType] = {}
-  //   }
-  //   for (let type of ['one', 'all']) {
-  //     if (!config.crud[crudType][type] && !config.crud.enable) {
-  //       config.crud[crudType][type] = false
-  //     }
-  //     if (config.crud[crudType][type] === false) continue
-  //     config.crud[crudType][type] = defaults(config.crud[crudType][type], {
-  //       type: type => type,
-  //       args: args => args,
-  //       resolve: resolve => resolve
-  //     })
-  //   }
-  // }
+  for (let crudType of ['create', 'read', 'update', 'delete']) {
+    config.crud[crudType] = defaults(config.crud[crudType], {
+      one: (func) => func,
+      all: (func) => func
+    })
+    if (crudType !== 'read') {
+      delete config.crud[crudType].all
+    }
+  }
   return config
 }
 
@@ -113,30 +87,6 @@ export const createNonNullListResolver = (resolver) => {
     }
   }
 }
-
-// export function convertFieldsFromGlobalId(model, data) {
-//   const rawAttributes = attributesForModel(model)
-//   _.each(Object.keys(data), (key) => {
-//     if (key === 'clientMutationId') {
-//       return
-//     }
-//     // Check if reference attribute
-//     const attr = rawAttributes[key]
-//     if (!attr) {
-//       return
-//     }
-//     if (attr.references || attr.primaryKey) {
-//       const { id } = fromGlobalId(data[key]);
-//
-//       // Check if id is numeric.
-//       if (!_.isNaN(_.toNumber(id))) {
-//         data[key] = parseInt(id);
-//       } else {
-//         data[key] = id;
-//       }
-//     }
-//   });
-// }
 
 export const removePrimaryKeyOrAutoIncrement = (model, fields) => {
   for (let field in fields) {

@@ -31,23 +31,23 @@ export default ({models, cache = {}}) => {
     const model = models[modelName]
     const modelConfig = utils.getModelGrapqhQLConfig(model)
 
-    const modelType = new GraphQLObjectType({
-      name: utils.funcWrapper(modelConfig.name, [utils.getTableName(model)]),
+    const modelType = new GraphQLObjectType(modelConfig.modelType({
+      name: utils.getTableName(model),
       fields: () => {
         const defaultFields = attributeFields(model, defaults(modelConfig.fieldConfig, {
           globalId: true,
           commentToDescription: true
         }))
         const defaultAssociationFields = associationFields({model, modelTypes})
-        return utils.funcWrapper(modelConfig.fields, [{
+        return {
           ...defaultFields,
           ...defaultAssociationFields
-        }, modelTypes])
+        }
       },
       interfaces: () => {
-        return utils.funcWrapper(modelConfig.interfaces, [[], modelTypes])
+        return []
       }
-    })
+    }))
     modelTypes[utils.getTableName(model)] = modelType
   }
   // setup connectionType
