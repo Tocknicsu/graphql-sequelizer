@@ -6,7 +6,6 @@ export default (sequelize, DataTypes) => {
   })
   project.associate = (models) => {
     project.belongsTo(models.user, {foreignKey: 'ownerId', as: 'owner'})
-    // console.log(project.rawAttributes)
   }
   project.graphql = {
     crud: {

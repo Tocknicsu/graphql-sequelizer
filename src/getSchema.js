@@ -6,9 +6,14 @@ import {
 
 import getModelTypes from './getModalTypes'
 import getQueryAndMutation from './getQueryAndMutation'
+import defaults from 'defaults'
 // import * as utils from './utils'
 
 const getSchema = (sequelize, schemaConfig) => {
+  schemaConfig = defaults(schemaConfig, {
+    mutations: () => {},
+    queries: () => {}
+  })
   const models = sequelize.models
 
   const modelTypes = getModelTypes({models})
@@ -37,16 +42,20 @@ const getSchema = (sequelize, schemaConfig) => {
         description: 'Self-Pointer from Root to Root',
         resolve: () => ({})
       },
-      ...queries
+      ...queries,
+      ...schemaConfig.queries({modelTypes})
       // TODO: add nodeField
     })
   })
 
   const mutationRoot = new GraphQLObjectType({
     name: 'Mutations',
-    fields: () => ({
-      ...mutations
-    })
+    fields: () => {
+      return {
+        ...mutations,
+        ...schemaConfig.mutations({modelTypes})
+      }
+    }
   })
 
   return new GraphQLSchema({

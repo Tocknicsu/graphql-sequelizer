@@ -3,14 +3,19 @@ import models from './models'
 import config from './config'
 import express from 'express'
 import expressPlayground from 'graphql-playground-middleware-express'
-import graphqlHTTP from 'express-graphql';
+import graphqlHTTP from 'express-graphql'
 
 (async () => {
   const app = express()
   models.sequelize.sync({
     force: false
   })
-  const schema = graphqlSequelizer.getSchema(models.sequelize)
+  const schema = graphqlSequelizer.getSchema(models.sequelize, {
+    mutations: (modelTypes) => {
+      return {
+      }
+    }
+  })
 
   app.use('/graphql', graphqlHTTP({
     schema,
