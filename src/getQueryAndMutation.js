@@ -46,7 +46,23 @@ export default ({
     name: nameResolver(model, 'read', 'one'),
     description: descriptionResolver(model, 'read', 'one'),
     type: modelType,
-    resolve: resolver(model)
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLID)
+      }
+    },
+    resolve: resolver(model, {
+      before: (findOptions, args) => {
+        if (args.id) {
+          let {type, id} = fromGlobalId(args.id)
+          findOptions.where = {
+            ...findOptions.where,
+            id
+          }
+        }
+        return findOptions
+      }
+    })
   })
   result.queries[graphqlObj.name] = graphqlObj
 
