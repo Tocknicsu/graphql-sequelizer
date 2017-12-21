@@ -9,6 +9,7 @@ import {
 import {
   fromGlobalId
 } from 'graphql-relay'
+import _ from 'lodash'
 
 export const getTableName = (model) => {
   return model.name
