@@ -30,10 +30,12 @@ export const getModelGrapqhQLConfig = (model) => {
     modelType: (modelType) => modelType,
     crud: {}
   })
+  const defaultCrudEnable = _.isBoolean(config.crud.enable) ? config.crud.enable : true
+  const defaultCrud = defaultCrudEnable ? (func) => func : false
   for (let crudType of ['create', 'read', 'update', 'delete']) {
     config.crud[crudType] = defaults(config.crud[crudType], {
-      one: (func) => func,
-      all: (func) => func
+      one: defaultCrud,
+      all: defaultCrud
     })
     if (crudType !== 'read') {
       delete config.crud[crudType].all
