@@ -8,22 +8,32 @@ import getModelTypes from './getModalTypes'
 import getQueryAndMutation from './getQueryAndMutation'
 import defaults from 'defaults'
 // import * as utils from './utils'
+import {
+  resolver,
+  relay
+} from 'graphql-sequelize'
+
+const {
+  sequelizeConnection
+} = relay
 
 const getSchema = (sequelize, schemaConfig) => {
   schemaConfig = defaults(schemaConfig, {
     mutations: () => {},
-    queries: () => {}
+    queries: () => {},
+    resolver: resolver,
+    sequelizeConnection: sequelizeConnection
   })
   const models = sequelize.models
 
-  const modelTypes = getModelTypes({models})
+  const modelTypes = getModelTypes({models, schemaConfig})
 
   const queries = {}
   const mutations = {}
 
   for (let modelName in models) {
     const model = models[modelName]
-    const modelQueryAndMutation = getQueryAndMutation({model, modelTypes})
+    const modelQueryAndMutation = getQueryAndMutation({model, modelTypes, schemaConfig})
     for (let queryName in modelQueryAndMutation.queries) {
       queries[queryName] = modelQueryAndMutation.queries[queryName]
     }

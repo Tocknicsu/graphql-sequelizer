@@ -1,7 +1,5 @@
 import {
-  relay,
-  attributeFields,
-  resolver
+  attributeFields
 } from 'graphql-sequelize'
 import {
   GraphQLObjectType
@@ -9,10 +7,6 @@ import {
 import defaults from 'defaults'
 
 import * as utils from './utils'
-
-const {
-  sequelizeConnection
-} = relay
 
 const associationFields = ({model, modelTypes}) => {
   const fields = {}
@@ -24,7 +18,7 @@ const associationFields = ({model, modelTypes}) => {
   return fields
 }
 
-export default ({models, cache = {}}) => {
+export default ({models, schemaConfig}) => {
   const modelTypes = {}
   // setup modelTypes
   for (let modelName in models) {
@@ -65,12 +59,12 @@ export default ({models, cache = {}}) => {
       if (associationType === 'BelongsTo') {
         modelTypes[connectionName] = {
           type: targetType,
-          resolve: resolver(association)
+          resolve: schemaConfig.resolver(association)
         }
       } else {
         // TODO: complete BelongsToMany
         // HasMany
-        const connection = sequelizeConnection({
+        const connection = schemaConfig.sequelizeConnection({
           name: connectionName,
           nodeType: targetType,
           target: association

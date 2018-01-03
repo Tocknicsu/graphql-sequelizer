@@ -1,6 +1,5 @@
 import {
-  attributeFields,
-  resolver
+  attributeFields
 } from 'graphql-sequelize'
 import {
   mutationWithClientMutationId,
@@ -16,7 +15,8 @@ import defaults from 'defaults'
 
 export default ({
   model,
-  modelTypes
+  modelTypes,
+  schemaConfig
 }) => {
   const modelType = modelTypes[utils.getTableName(model)]
   const modelConfig = utils.getModelGrapqhQLConfig(model)
@@ -36,7 +36,7 @@ export default ({
       name: nameResolver(model, 'read', 'all'),
       description: descriptionResolver(model, 'read', 'all'),
       type: utils.createNonNullList(modelType),
-      resolve: utils.createNonNullListResolver(resolver(model, {
+      resolve: utils.createNonNullListResolver(schemaConfig.resolver(model, {
         list: true
       }))
     })
@@ -53,10 +53,10 @@ export default ({
           type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: resolver(model, {
+      resolve: schemaConfig.resolver(model, {
         before: (findOptions, args) => {
           if (args.id) {
-            let {type, id} = fromGlobalId(args.id)
+            let {id} = fromGlobalId(args.id)
             findOptions.where = {
               ...findOptions.where,
               id

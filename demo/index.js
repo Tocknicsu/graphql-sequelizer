@@ -1,3 +1,6 @@
+import {
+  resolver
+} from 'graphql-sequelize'
 import graphqlSequelizer from './../lib/index.js'
 import models from './models'
 import config from './config'
@@ -11,8 +14,9 @@ import graphqlHTTP from 'express-graphql'
     force: false
   })
   const schema = graphqlSequelizer.getSchema(models.sequelize, {
-    mutations: (modelTypes) => {
-      return {
+    resolver: (...args) => {
+      return (...innerArgs) => {
+        return resolver(...args)(...innerArgs)
       }
     }
   })
