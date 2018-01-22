@@ -19,14 +19,16 @@ const {
 
 const getSchema = (sequelize, schemaConfig) => {
   schemaConfig = defaults(schemaConfig, {
+    models: (model) => (model),
     mutations: () => {},
     queries: () => {},
+    schema: (schema) => (schema),
     resolver: resolver,
     sequelizeConnection: sequelizeConnection
   })
   const models = sequelize.models
 
-  const modelTypes = getModelTypes({models, schemaConfig})
+  const modelTypes = schemaConfig.models(getModelTypes({models, schemaConfig}))
 
   const queries = {}
   const mutations = {}
@@ -68,10 +70,10 @@ const getSchema = (sequelize, schemaConfig) => {
     }
   })
 
-  return new GraphQLSchema({
+  return new GraphQLSchema(schemaConfig.schema({
     query: queryRoot,
     mutation: mutationRoot
-  })
+  }))
 }
 
 export default getSchema
