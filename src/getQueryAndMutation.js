@@ -77,7 +77,7 @@ export default ({
   utils.convertFieldsToGlobalId(model, defaultFields)
 
   const valuesFieldType = new GraphQLInputObjectType({
-    name: `${utils.getTableName(model)}ValuesInput`,
+    name: `${utils.getTableName(model)}DefaultValuesInput`,
     description: 'Values to create or update',
     fields: defaultFields
   })

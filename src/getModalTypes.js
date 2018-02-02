@@ -48,6 +48,8 @@ export default ({models, schemaConfig}) => {
   // TODO: need to customize here
   for (let modelName in models) {
     const model = models[modelName]
+    const modelConfig = utils.getModelGrapqhQLConfig(model)
+    const connectionWrapper = defaults(modelConfig.connection, {})
 
     const associations = model.associations
     for (let associationKey in associations) {
@@ -55,20 +57,20 @@ export default ({models, schemaConfig}) => {
       const { associationType, target } = association
       const targetType = modelTypes[target.name]
       const connectionName = utils.connectionNameForAssociation(model, associationKey)
-
+      const connectionWrapperFunction = connectionWrapper[connectionName] || ((obj) => (obj))
       if (associationType === 'BelongsTo') {
-        modelTypes[connectionName] = {
+        modelTypes[connectionName] = connectionWrapperFunction({
           type: targetType,
           resolve: schemaConfig.resolver(association)
-        }
+        })
       } else {
         // TODO: complete BelongsToMany
         // HasMany
-        const connection = schemaConfig.sequelizeConnection({
+        const connection = schemaConfig.sequelizeConnection(connectionWrapperFunction({
           name: connectionName,
           nodeType: targetType,
           target: association
-        })
+        }))
         modelTypes[connectionName] = {
           type: connection.connectionType,
           args: connection.connectionArgs,
