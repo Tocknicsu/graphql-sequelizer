@@ -9,7 +9,7 @@ export default (sequelize, DataTypes) => {
   }
   project.graphql = {
     crud: {
-      enable: false
+      enable: true
     }
   }
   return project

@@ -111,7 +111,7 @@ export default ({
     result.mutations[graphqlObj.name] = mutationWithClientMutationId(graphqlObj)
   }
 
-  utils.convertFieldsToGlobalId(model, defaultFields)
+  utils.pruneReferenceNotNull(model, defaultFields)
 
   if (modelConfig.crud.update.one) {
     graphqlObj = modelConfig.crud.update.one({
