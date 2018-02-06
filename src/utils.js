@@ -101,11 +101,29 @@ export const removePrimaryKeyOrAutoIncrement = (model, fields) => {
   }
 }
 
-export const globalIdInputField = (modelName) => {
+export const globalIdInputNotNullField = (modelName) => {
   return {
     name: 'id',
     description: `The ID for ${modelName}`,
     type: new GraphQLNonNull(GraphQLID)
+  }
+}
+
+export const globalIdInputField = (modelName) => {
+  return {
+    name: 'id',
+    description: `The ID for ${modelName}`,
+    type: GraphQLID
+  }
+}
+
+export const pruneReferenceNotNull = (model, fields) => {
+  for (let field in fields) {
+    const attribute = model.rawAttributes[field]
+    if (attribute.references) {
+      const modelName = attribute.references.model
+      fields[field] = globalIdInputField(modelName)
+    }
   }
 }
 
@@ -114,7 +132,7 @@ export const convertFieldsToGlobalId = (model, fields) => {
     const attribute = model.rawAttributes[field]
     if (attribute.references) {
       const modelName = attribute.references.model
-      fields[field] = globalIdInputField(modelName)
+      fields[field] = globalIdInputNotNullField(modelName)
     }
   }
 }
